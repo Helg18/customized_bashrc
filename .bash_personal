@@ -1,0 +1,229 @@
+#!/bin/bash
+# ==================================================
+# ARCHIVO DE PERSONALIZACIÓN PRINCIPAL
+# Configuraciones de prompt, alias, variables y bienvenida
+# ==================================================
+
+# ===== SOLUCIÓN DE LOCALES =====
+# Fix para errores de locales en Perl
+export LC_ALL=C.UTF-8
+export LANG=C.UTF-8
+export LANGUAGE=C.UTF-8
+
+# ===== CONFIGURACIÓN BÁSICA =====
+# Configurar terminal para soportar 256 colores
+export TERM=xterm-256color
+
+# ===== PROMPT AVANZADO =====
+# Función para mostrar branch de git en el prompt con pulpo 🐙
+parse_git_branch() {
+    git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ 🐙 \1/'
+}
+
+# Función para emoji aleatorio que cambia en cada línea
+function random_emoji() {
+    emojis=("🚀" "🐧" "💻" "🔥" "⚡" "🎯" "🐳" "🔧" "🎨" "📊" "🦊" "🎮" "🌟" "💫")
+    echo "${emojis[$RANDOM % ${#emojis[@]}]}"
+}
+
+# Prompt principal de DOS LÍNEAS con colores de Byobu y pulpo para Git
+PS1='\[\033[38;5;214m\]┌─[\[\033[38;5;69m\]\u\[\033[38;5;214m\]@\[\033[38;5;167m\]\h\[\033[38;5;214m\]]-[\[\033[38;5;71m\]\W\[\033[38;5;214m\]]\[\033[01;31m\]$(parse_git_branch)\[\033[0m\]\n\[\033[38;5;214m\]└─$(random_emoji)\[\033[00m\] '
+
+# Configurar título de ventana para terminales que lo soportan
+case "$TERM" in
+xterm*|rxvt*)
+    PS1="\[\e]0;\u@\h: \W\a\]$PS1"
+    ;;
+esac
+
+# ===== ALIAS BÁSICOS MEJORADOS =====
+# Navegación
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias .....='cd ../../../..'
+
+# Listados con colores
+alias ls='ls --color=auto'
+alias ll='ls -alFh --color=auto'
+alias la='ls -A --color=auto'
+alias l='ls -CF --color=auto'
+
+# Listado con estilo (requiere lolcat)
+alias lls='ls -alFh --color=auto | lolcat 2>/dev/null || ls -alFh --color=auto'
+
+# ===== ALIAS DIVERTIDOS =====
+# Efectos visuales y juegos
+alias matrix='cmatrix -s -b 2>/dev/null || echo "Instala cmatrix: sudo apt install cmatrix"'
+alias hacker='cmatrix -b -s -C green 2>/dev/null || echo "Instala cmatrix: sudo apt install cmatrix"'
+alias starwars='telnet towel.blinkenlights.nl 2>/dev/null || echo "Instala telnet: sudo apt install telnet"'
+alias train='sl 2>/dev/null | lolcat 2>/dev/null || sl 2>/dev/null || echo "Instala sl: sudo apt install sl"'
+alias quote='fortune es 2>/dev/null | boxes -d dog 2>/dev/null | lolcat 2>/dev/null || fortune es 2>/dev/null || echo "Instala fortune: sudo apt install fortune-mod fortune-es"'
+
+# Utilidades con estilo
+alias space='echo "🚀" | toilet -f term 2>/dev/null | lolcat 2>/dev/null || echo "🚀"'
+alias celebrate='echo "🎉 ¡Felicidades! 🎉" | toilet -f term -F gay 2>/dev/null | lolcat 2>/dev/null || echo "🎉 ¡Felicidades! 🎉"'
+
+# Información con estilo
+alias weather='curl -s "wttr.in?lang=es" 2>/dev/null || echo "Clima no disponible"'
+alias moon='curl -s "wttr.in/Moon?lang=es" 2>/dev/null || echo "Info lunar no disponible"'
+
+# ===== ALIAS DE SISTEMA =====
+# Gestión de paquetes
+alias update='sudo apt update && sudo apt upgrade -y'
+alias clean='sudo apt autoremove -y && sudo apt autoclean'
+alias please='sudo $(history -p !!)'
+
+# Red y puertos
+alias ports='netstat -tulanp'
+alias myip='curl -s ifconfig.me 2>/dev/null || echo "IP no disponible"'
+
+# Git mejorado
+alias gi='git init'
+alias gs='git status'
+alias ga='git add'
+alias gc='git commit -m'
+alias gp='git push'
+alias gl='git log --oneline --graph --decorate --all'
+alias gcm='git checkout main || git checkout master'
+
+# ===== CONFIGURACIÓN DE COLORES =====
+# Colores personalizados para ls
+export LS_COLORS='di=1;35:ln=1;36:so=1;32:pi=1;33:ex=1;31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43'
+
+# Colores para man pages
+export LESS_TERMCAP_mb=$'\e[1;32m'
+export LESS_TERMCAP_md=$'\e[1;32m'
+export LESS_TERMCAP_me=$'\e[0m'
+export LESS_TERMCAP_se=$'\e[0m'
+export LESS_TERMCAP_so=$'\e[01;33m'
+export LESS_TERMCAP_ue=$'\e[0m'
+export LESS_TERMCAP_us=$'\e[1;4;31m'
+
+# ===== CONFIGURACIÓN DE HISTORIAL =====
+# Ignorar comandos duplicados y que empiezan con espacio
+export HISTCONTROL=ignoreboth
+
+# Tamaño del historial
+export HISTSIZE=5000
+export HISTFILESIZE=10000
+
+# ===== CONFIGURACIÓN DE EDITOR =====
+# Editor preferido - VIM
+export EDITOR=vim
+export VISUAL=vim
+
+# ===== BIENVENIDA INTERACTIVA =====
+# Solo mostrar en terminales interactivas
+if [[ $- == *i* ]]; then
+    clear
+    
+    # Banner de bienvenida personalizado
+    echo "
+    ╔══════════════════════════════════════════╗
+    ║           🚀 TERMINAL PRO 🚀             ║
+    ║                                          ║
+    ║      Developer: $(whoami)                ║
+    ║      Hostname: $(hostname)               ║  
+    ║      Session: $(date '+%Y-%m-%d %H:%M')           ║
+    ║                                          ║
+    ╚══════════════════════════════════════════╝
+    " | lolcat 2>/dev/null || echo "=== TERMINAL PRO ==="
+    
+    # Información del sistema rápida - CORREGIDO
+    echo ""
+    echo "📊 ESTADO DEL SISTEMA:" | lolcat 2>/dev/null || echo "=== ESTADO DEL SISTEMA ==="
+    
+    # CPU usage - método seguro
+    cpu_usage=$(grep 'cpu ' /proc/stat 2>/dev/null | awk '{usage=($2+$4)*100/($2+$4+$5)} END {printf "%.1f%%", usage}' || echo "N/A")
+    echo "💻 CPU: $cpu_usage"
+    
+    # RAM - método seguro sin operaciones en unidades
+    ram_info=$(free -h 2>/dev/null | grep Mem: | awk '{print $3 "/" $2 " used"}' || echo "N/A")
+    echo "💾 RAM: $ram_info"
+    
+    # Disco - método seguro
+    disk_info=$(df -h / 2>/dev/null | awk 'NR==2 {print $5 " used"}' || echo "N/A")
+    echo "💿 DISCO: $disk_info"
+    
+    # Uptime
+    uptime_info=$(uptime -p 2>/dev/null | sed 's/up //' || echo "N/A")
+    echo "⏰ UPTIME: $uptime_info"
+    
+    # Fortune en ESPAÑOL con animal aleatorio
+    if command -v fortune &> /dev/null && command -v cowsay &> /dev/null; then
+        echo ""
+        echo "💭 SABIDURÍA DEL DÍA:" | lolcat 2>/dev/null || echo "=== SABIDURÍA DEL DÍA ==="
+        ANIMALES=("tux" "koala" "sheep" "bud-frogs" "moose")
+        ANIMAL=${ANIMALES[$RANDOM % ${#ANIMALES[@]}]}
+        fortune es 2>/dev/null | cowsay -f $ANIMAL 2>/dev/null | lolcat 2>/dev/null || fortune es 2>/dev/null | cowsay -f $ANIMAL 2>/dev/null || fortune 2>/dev/null | cowsay -f $ANIMAL 2>/dev/null
+    elif command -v fortune &> /dev/null; then
+        echo ""
+        fortune es 2>/dev/null || fortune 2>/dev/null
+    fi
+    
+    # Mensaje motivacional aleatorio en ESPAÑOL
+    echo ""
+    MENSAJES=(
+        "✨ ¡Hoy es un gran día para programar algo increíble!"
+        "🚀 La fuerza está contigo, joven padawan!"
+        "💻 Compila tus sueños, depura tus miedos!"
+        "🎯 Enfócate como si fueras un algoritmo!"
+        "🔥 ¡Que el código te acompañe!"
+        "🐧 En el kernel de la vida, sé root de tus decisiones!"
+        "💫 Las mejores líneas de código son las que no se escriben!"
+        "🐙 ¡Pulpo power! Como los tentáculos, tus ramas se extienden."
+        "🚀 Despega hacia el éxito con cada commit!"
+        "💾 Tu mente es como un SSD: rápida y eficiente."
+    )
+    MENSAJE=${MENSAJES[$RANDOM % ${#MENSAJES[@]}]}
+    echo "💫 $MENSAJE" | lolcat 2>/dev/null || echo "💫 $MENSAJE"
+    
+    # Espacio disponible
+    echo ""
+    echo "📂 DIRECTORIO ACTUAL: $(pwd)" | lolcat 2>/dev/null || echo "📂 DIRECTORIO ACTUAL: $(pwd)"
+    echo ""
+fi
+
+# ===== CONFIGURACIÓN DE FZF (FUZZY FINDER) =====
+# Configuración para FZF si está instalado
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+
+# ===== TEMAS DE COLOR BASE16 =====
+# Cargar temas base16 si existen
+BASE16_SHELL="$HOME/.config/base16-shell/"
+[ -n "$PS1" ] && [ -s "$BASE16_SHELL/profile_helper.sh" ] && \
+    eval "$("$BASE16_SHELL/profile_helper.sh")"
+
+# ===== CONFIGURACIÓN DE BYOBU =====
+# Deshabilitar prompt de Byobu para evitar conflictos
+# Comenta la siguiente línea si quieres usar el prompt de Byobu
+# byobu-disable-prompt 2>/dev/null || true
+
+# ===== LOGGING DE COMANDOS =====
+# Log de comandos importantes para auditoría
+function log_command() {
+    local log_file="$HOME/.terminal_log.txt"
+    local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+    echo "[$timestamp] $USER@$(hostname): $PWD | $BASH_COMMAND" >> "$log_file" 2>/dev/null || true
+}
+
+# Solo activar logging en terminales interactivas
+if [ -n "$PS1" ]; then
+    trap log_command DEBUG
+fi
+
+# ===== PATH PERSONALIZADO =====
+# Agregar directorios personalizados al PATH
+export PATH="$HOME/bin:$HOME/.local/bin:$PATH"
+
+# ===== CONFIGURACIÓN DE DOCKER =====
+# Docker sin sudo (si está configurado)
+# export DOCKER_HOST=unix:///var/run/docker.sock
+
+# ===== TERMINAL ALWAYS COLOR =====
+# Forzar salida de color para todos los comandos
+export CLICOLOR=1
+export COLORTERM=truecolor
+
+echo "✅ ¡Configuración personal cargada correctamente! 🎉" | lolcat 2>/dev/null || echo "✅ ¡Configuración personal cargada correctamente! 🎉"
