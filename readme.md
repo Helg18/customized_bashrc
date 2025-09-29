@@ -2,11 +2,11 @@
 
 [![Ubuntu](https://img.shields.io/badge/Ubuntu-20.04%2B-orange?logo=ubuntu)](https://ubuntu.com/)
 [![Bash](https://img.shields.io/badge/Bash-4.4%2B-blue?logo=gnu-bash)](https://www.gnu.org/software/bash/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/Helg18/customized_bashrc)
+
+> ⭐ **Basado en:** [Helg18/customized_bashrc](https://github.com/Helg18/customized_bashrc) - Agradecimientos especiales a Helg18 por la inspiración inicial.
 
 Una personalización completa y espectacular para tu terminal de Ubuntu/Linux, con más de 50 funciones útiles, alias divertidos y un prompt visualmente atractivo.
-
-![Terminal Pro Demo](https://via.placeholder.com/800x400/333/fff?text=Terminal+Pro+Demo)
 
 ## 📋 Tabla de Contenidos
 
@@ -19,6 +19,7 @@ Una personalización completa y espectacular para tu terminal de Ubuntu/Linux, c
 - [Prompt Personalizado](#-prompt-personalizado)
 - [Solución de Problemas](#-solución-de-problemas)
 - [Contribuciones](#-contribuciones)
+- [Licencia](#-licencia)
 
 ## ✨ Características
 
@@ -38,22 +39,44 @@ Una personalización completa y espectacular para tu terminal de Ubuntu/Linux, c
 ### Script de Instalación Automática
 
 ```bash
-# Descargar y ejecutar el script de instalación
-curl -sSL https://raw.githubusercontent.com/tuusuario/terminal-pro/main/install.sh | bash
+# Descargar los archivos de configuración
+curl -o ~/.bash_personal https://raw.githubusercontent.com/Helg18/customized_bashrc/main/.bash_personal
+curl -o ~/.bash_functions https://raw.githubusercontent.com/Helg18/customized_bashrc/main/.bash_functions
+
+# Hacer ejecutables
+chmod +x ~/.bash_personal ~/.bash_functions
+
+# Configurar bashrc
+echo -e '\n# Personalización Terminal Pro\nif [ -f ~/.bash_personal ]; then\n    source ~/.bash_personal\nfi\nif [ -f ~/.bash_functions ]; then\n    source ~/.bash_functions\nfi' >> ~/.bashrc
+
+# Recargar configuración
+source ~/.bashrc
 ```
 
 ### Instalación Paso a Paso
 
 ```bash
-# 1. Clonar el repositorio
-git clone https://github.com/tuusuario/terminal-pro.git
-cd terminal-pro
+# 1. Descargar los archivos desde el repositorio
+cd ~
+wget https://raw.githubusercontent.com/Helg18/customized_bashrc/main/.bash_personal
+wget https://raw.githubusercontent.com/Helg18/customized_bashrc/main/.bash_functions
 
-# 2. Ejecutar instalación
-chmod +x install.sh
-./install.sh
+# 2. Hacer ejecutables
+chmod +x .bash_personal .bash_functions
 
-# 3. Recargar terminal
+# 3. Configurar bashrc
+echo -e '\n# ==================================================' >> ~/.bashrc
+echo '# CARGA DE CONFIGURACIÓN PERSONALIZADA' >> ~/.bashrc
+echo '# Basado en: github.com/Helg18/customized_bashrc' >> ~/.bashrc
+echo '# ==================================================' >> ~/.bashrc
+echo 'if [ -f ~/.bash_personal ]; then' >> ~/.bashrc
+echo '    source ~/.bash_personal' >> ~/.bashrc
+echo 'fi' >> ~/.bashrc
+echo 'if [ -f ~/.bash_functions ]; then' >> ~/.bashrc
+echo '    source ~/.bash_functions' >> ~/.bashrc
+echo 'fi' >> ~/.bashrc
+
+# 4. Recargar terminal
 source ~/.bashrc
 ```
 
@@ -67,8 +90,8 @@ source ~/.bashrc
 # Crear el archivo
 nano ~/.bash_personal
 
-# Pegar el contenido completo del archivo .bash_personal
-# (El contenido debe ir aquí)
+# Copiar y pegar el contenido desde:
+# https://raw.githubusercontent.com/Helg18/customized_bashrc/main/.bash_personal
 ```
 
 **Archivo 2: `~/.bash_functions`**
@@ -77,8 +100,8 @@ nano ~/.bash_personal
 # Crear el archivo
 nano ~/.bash_functions
 
-# Pegar el contenido completo del archivo .bash_functions
-# (El contenido debe ir aquí)
+# Copiar y pegar el contenido desde:
+# https://raw.githubusercontent.com/Helg18/customized_bashrc/main/.bash_functions
 ```
 
 ### Paso 2: Permisos de Ejecución
@@ -94,6 +117,7 @@ Agrega al final de tu `~/.bashrc`:
 ```bash
 # ==================================================
 # CARGA DE CONFIGURACIÓN PERSONALIZADA
+# Basado en: github.com/Helg18/customized_bashrc
 # ==================================================
 if [ -f ~/.bash_personal ]; then
     source ~/.bash_personal
@@ -342,7 +366,7 @@ list-aliases
 
 ## 🤝 Contribuciones
 
-¡Contribuciones son bienvenidas! Puedes:
+¡Contribuciones son bienvenidas! Este proyecto está basado en [Helg18/customized_bashrc](https://github.com/Helg18/customized_bashrc) y se anima a:
 
 1. 🐛 Reportar bugs
 2. 💡 Sugerir nuevas funciones
@@ -370,13 +394,43 @@ Si encuentras problemas:
 2. 🆘 Usa `myhelp` para ver comandos
 3. 📦 Verifica paquetes instalados
 4. 🔄 Recarga con `source ~/.bashrc`
+5. 🔍 Consulta el [repositorio original](https://github.com/Helg18/customized_bashrc)
 
 ## 📄 Licencia
 
-Este proyecto está bajo la Licencia MIT. Ver el archivo [LICENSE](LICENSE) para más detalles.
+### Términos de Uso
+
+Este software se proporciona bajo los siguientes términos:
+
+**✅ PERMITIDO:**
+- Usar el software para cualquier propósito personal o educativo
+- Copiar y distribuir el software
+- Modificar y adaptar el código
+- Compartir mejoras con la comunidad
+
+**❌ NO PERMITIDO:**
+- Monetizar el software directamente
+- Vender el software como producto comercial
+- Usar el software en productos comerciales sin autorización
+- Reclamar autoría original del trabajo base
+
+### Atribución
+
+Al usar este software, se agradece:
+- Mantener los créditos al [repositorio original](https://github.com/Helg18/customized_bashrc)
+- Compartir mejoras con la comunidad
+- Respetar el espíritu de código abierto
+
+**El software se proporciona "TAL CUAL", sin garantías de ningún tipo.**
 
 ---
 
+## 🔗 Enlaces Importantes
+
+- **Repositorio Original:** [github.com/Helg18/customized_bashrc](https://github.com/Helg18/customized_bashrc)
+- **Reportar Issues:** [Issues del repositorio](https://github.com/Helg18/customized_bashrc/issues)
+- **Contribuir:** Fork y Pull Requests son bienvenidos
+
 **¡Disfruta de tu terminal super personalizada! 🚀🐙**
 
-*Creado con ❤️ para desarrolladores que aman la terminal*
+*Basado en el trabajo de [Helg18/customized_bashrc](https://github.com/Helg18/customized_bashrc) - Creado con ❤️ para desarrolladores que aman la terminal*
