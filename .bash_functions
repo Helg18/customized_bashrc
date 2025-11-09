@@ -864,6 +864,110 @@ function terminal-upgrade() {
     myhelp | tail -5
 }
 
+# Función para unificar recursivamente el contenido de archivos en una ruta
+# Uso: unify_content_recursive <ruta_a_escanear> <archivo_de_salida>
+function unify-content-recursive() {
+    # 1. Verificación de argumentos y ruta
+    if [ "$#" -ne 2 ]; then
+        echo "Uso: unify_content_recursive <ruta_a_escanear> <archivo_de_salida>"
+        return 1
+    fi
+
+    local SCAN_PATH="$1"
+    local OUTPUT_FILE="$2"
+
+    if [ ! -d "$SCAN_PATH" ]; then
+        echo "Error: La ruta '$SCAN_PATH' no es un directorio válido."
+        return 1
+    fi
+
+    echo "Preparando para escanear y unificar archivos..."
+    
+    # 2. Conteo robusto de archivos
+    # Usamos 'find -type f' para contar solo archivos regulares
+    local TOTAL_FILES=$(find "$SCAN_PATH" -type f -print | wc -l)
+    
+    if [ "$TOTAL_FILES" -eq 0 ]; then
+        echo "Advertencia: No se encontraron archivos regulares en '$SCAN_PATH'."
+        return 0
+    fi
+    
+    echo "Total de archivos a procesar: $TOTAL_FILES"
+
+    # Inicializar contadores y variables de tiempo
+    local CURRENT_FILE=0
+    local START_TIME=$SECONDS
+    local ELAPSED_TIME=0
+    local ESTIMATED_TIME=0
+    local REMAINING_TIME=0
+
+    # 3. Limpiar o crear el archivo de salida
+    echo "Generando archivo unificado en: $OUTPUT_FILE"
+    echo "Contenido Unificado de: $SCAN_PATH" > "$OUTPUT_FILE"
+    echo "Generado el: $(date)" >> "$OUTPUT_FILE"
+    echo "========================================" >> "$OUTPUT_FILE"
+
+    # 4. Función de la barra de progreso (interna)
+    _progress_bar() {
+        local CURRENT=$1
+        local TOTAL=$2
+        local ELAPSED=$3
+        # Asegurarse de que TOTAL no sea cero para evitar divisiones por cero
+        if [ "$TOTAL" -eq 0 ]; then
+            local PERCENT=0
+        else
+            local PERCENT=$(( (CURRENT * 100) / TOTAL ))
+        fi
+
+        local BAR_LENGTH=50
+        local FILLED_LENGTH=$(( (PERCENT * BAR_LENGTH) / 100 ))
+        local EMPTY_LENGTH=$(( BAR_LENGTH - FILLED_LENGTH ))
+        
+        # Calcular tiempo restante (solo si se ha procesado más de 0 archivos y TOTAL > 0)
+        if [ "$CURRENT" -gt 0 ] && [ "$TOTAL" -gt 0 ]; then
+            # Se calcula el tiempo estimado total y luego el restante
+            ESTIMATED_TIME=$(( (ELAPSED * TOTAL) / CURRENT ))
+            REMAINING_TIME=$(( ESTIMATED_TIME - ELAPSED ))
+        fi
+        
+        # Formato de la barra: [####################-----]
+        local BAR=$(printf "%${FILLED_LENGTH}s" | tr ' ' '#')
+        BAR=$(printf "%s%${EMPTY_LENGTH}s" "$BAR" | tr ' ' '-')
+
+        # Imprimir la barra y la info de tiempo (uso \r para sobrescribir la línea)
+        printf "\rProgreso: [%s] %3d%% (%d/%d) | Transcurrido: %ss | Restante: %ss" \
+               "$BAR" "$PERCENT" "$CURRENT" "$TOTAL" "$ELAPSED" "$REMAINING_TIME"
+    }
+
+    # 5. Procesamiento de archivos **SEGURO** con find -print0
+    # Este bucle es seguro contra nombres de archivo con espacios o caracteres especiales.
+    find "$SCAN_PATH" -type f -print0 | while IFS= read -r -d $'\0' file; do
+        CURRENT_FILE=$((CURRENT_FILE + 1))
+        
+        # A. Actualizar y mostrar la barra de progreso
+        ELAPSED_TIME=$((SECONDS - START_TIME))
+        _progress_bar "$CURRENT_FILE" "$TOTAL_FILES" "$ELAPSED_TIME"
+
+        # B. Escribir la estructura y el contenido
+        echo "" >> "$OUTPUT_FILE"
+        echo "--- ARCHIVO INICIO ---" >> "$OUTPUT_FILE"
+        echo "RUTA: ${file}" >> "$OUTPUT_FILE"
+        
+        # El contenido del archivo va entre los delimitadores
+        cat "${file}" >> "$OUTPUT_FILE"
+        
+        echo "--- ARCHIVO FIN ---" >> "$OUTPUT_FILE"
+    done
+
+    # 6. Mensaje de finalización
+    local END_TIME=$SECONDS
+    local TOTAL_ELAPSED=$((END_TIME - START_TIME))
+    # Aseguramos que la barra de progreso muestre 100% al finalizar
+    printf "\rProgreso: [%s] 100%% (%d/%d) | Tiempo Total: %ss\n" "$(printf "%50s" | tr ' ' '#')" "$TOTAL_FILES" "$TOTAL_FILES" "$TOTAL_ELAPSED"
+    echo "✅ Proceso completado. Archivo generado correctamente en $OUTPUT_FILE."
+}
+
+
 # ===== SISTEMA DE AYUDA =====
 
 # Sistema de ayuda personalizado
@@ -929,13 +1033,14 @@ function myhelp() {
     echo ""
     
     echo "🔄 UTILIDADES:"
-    echo "  celebrate        - Celebrar éxito"
-    echo "  terminal-upgrade - Actualizar terminal"
-    echo "  lalias           - Muestra la lista de alias"
-    echo "  list-aliases     - Muestra la lista de alias"
-    echo "  search-aliases   - Busca un alias en especifico"
-    echo "  alias-info       - Muestra info del alias"
-    echo "  myhelp           - Mostrar esta ayuda"
+    echo "  celebrate               - Celebrar éxito"
+    echo "  terminal-upgrade        - Actualizar terminal"
+    echo "  lalias                  - Muestra la lista de alias"
+    echo "  list-aliases            - Muestra la lista de alias"
+    echo "  search-aliases          - Busca un alias en especifico"
+    echo "  unify-content-recursive - Unifica todos los archivos en uno solo"
+    echo "  alias-info              - Muestra info del alias"
+    echo "  myhelp                  - Mostrar esta ayuda"
     echo ""
     
     echo "💡 CONSEJO: Usa 'type <función>' para ver el código de cualquier función"
