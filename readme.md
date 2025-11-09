@@ -233,6 +233,7 @@ source ~/.bashrc
 | `celebrate` | Celebra éxitos | Automático |
 | `quick-backup` | Backup configuraciones | `quick-backup` |
 | `terminal-upgrade` | Actualiza terminal | `terminal-upgrade` |
+| `unify-content-recursive` | Unifica todos los archivos de una ruta en uno solo | `unify-content-recursive <ruta_a_escanear> <archivo_de_salida>` |
 | `gen-pass` | Genera contraseñas | `gen-pass 20 3` |
 | `check-ports` | Verifica puertos | `check-ports` |
 
